@@ -1,0 +1,15 @@
+{
+  "name": "pristagna-akvaryum",
+  "version": "1.0.0",
+  "description": "kick.com/pristagna kolektif canlı yayın akvaryumu ve sanal bebek MMO oyunu",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  },
+  "author": "pristagna community",
+  "license": "MIT"
+}

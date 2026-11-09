@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akvaryum - 8-Bit Pixel Art</title>
+    <meta name="description" content="Akvaryum - 8-Bit Pixel Art Sanal Bebek ve Çok Oyunculu Kick Canlı Yayın Akvaryumu.">
+    <!-- Retro Piksel Fontları -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 1. KICK GİRİŞ KAPISI (GİRİŞ YAPILMADAN OYUNA GİRİLEMEZ) -->
+    <div id="view-kick-gate">
+        <div class="gate-cabinet">
+            <div class="gate-marquee">
+                <h1 class="gate-title">AKVARYUM</h1>
+                <p class="gate-subtitle">8-BIT KICK.COM KOLEKTİF SANAL BEBEK</p>
+            </div>
+            <p class="gate-desc">
+                Oyuna başlamak, kendi piksel balığını çizmek ve topluluk akvaryumuna katılmak için Kick hesabınla giriş yapmalısın.
+            </p>
+            <div class="gate-actions">
+                <!-- Resmi Kick OAuth 2.0 Giriş Butonu -->
+                <button class="gate-oauth-btn" id="btnGateKickOAuth">
+                    <span>⚡</span> KICK İLE GİRİŞ YAP (OAUTH 2.0)
+                </button>
+                <div class="gate-divider">
+                    <span>VEYA KULLANICI ADIYLA BAĞLAN</span>
+                </div>
+                <div class="gate-input-group">
+                    <input type="text" id="inputGateKickUsername" class="gate-input" placeholder="Kick Kullanıcı Adın (ör. pristagna)">
+                    <button class="gate-start-btn" id="btnGateConfirm">BAŞLA ▶</button>
+                </div>
+            </div>
+            <p class="press-start-tag">★ INSERT COIN TO PLAY ★</p>
+        </div>
+    </div>
+
+    <!-- 2. OYUN ANA ARAYÜZÜ (KICK GİRİŞİ YAPILINCA AÇILIR) -->
+    <div id="app-content">
+        <header class="app-header">
+            <div class="brand-area">
+                <div class="brand-title">
+                    <span class="logo-fish">🐟</span> AKVARYUM
+                </div>
+            </div>
+
+            <nav class="nav-tabs">
+                <button class="tab-btn active" data-tab="draw" id="tabBtnDraw">
+                    <span>🎨</span> Balık Çiz
+                </button>
+                <button class="tab-btn" data-tab="pet" id="tabBtnPet">
+                    <span>🐟</span> Akvaryumum
+                </button>
+                <button class="tab-btn" data-tab="community" id="tabBtnCommunity">
+                    <span>👥</span> Topluluk
+                </button>
+                <button class="tab-btn" data-tab="ocean" id="tabBtnOcean">
+                    <span>🌊</span> Ortak Okyanus
+                </button>
+            </nav>
+
+            <div class="header-actions">
+                <!-- Altın Bakiyesi -->
+                <div class="gold-badge" id="hudGoldDisplay" title="AFK Farm ile biriken altınların">
+                    <span>🪙</span>
+                    <strong id="userGoldCount">50</strong>
+                </div>
+
+                <!-- Dükkan Butonu -->
+                <button class="tab-btn shop-btn-nav" id="btnOpenShop">
+                    🛍️ Dükkan
+                </button>
+
+                <!-- Kick Kullanıcı Profili -->
+                <div class="kick-user-profile" id="userKickProfile" title="Kick Profilin (Çıkış yapmak için tıkla)">
+                    <div class="kick-avatar-small" id="userKickAvatarChar">P</div>
+                    <span class="kick-user-name" id="userKickNameDisplay">@pristagna</span>
+                </div>
+
+                <!-- Hızlı Test Modu Toggle -->
+                <button class="icon-btn" id="btnToggleFastMode" title="10 Dk yerine 5 Sn Hızlı Test">
+                    ⚡
+                </button>
+
+                <!-- Ses Aç/Kapa -->
+                <button class="icon-btn" id="btnToggleSound" title="Sesi Aç/Kapat">
+                    🔊
+                </button>
+            </div>
+        </header>
+
+        <!-- 3. BİRİNCİ AŞAMA: 8-BİT PİKSEL ÇİZİM ATÖLYESİ -->
+        <main class="view-container active" id="view-draw">
+            <div class="draw-card">
+                <div class="draw-header">
+                    <div>
+                        <h2>🎨 Piksel Balığını Çiz</h2>
+                        <p>Çizdiğin piksel balık canlanacak, akvaryumunda büyüyecek ve ortak okyanusa katılacak!</p>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button class="tool-btn" id="btnLoadSampleFish" title="8-Bit Şablon">
+                            ✨ Şablon
+                        </button>
+                        <button class="tool-btn" id="btnToggleGrid">
+                            ▦ Izgara
+                        </button>
+                        <button class="tool-btn" id="btnUndo">
+                            ↩ Geri Al
+                        </button>
+                        <button class="tool-btn" id="btnClearCanvas">
+                            🗑 Temizle
+                        </button>
+                    </div>
+                </div>
+
+                <div class="draw-content">
+                    <div class="canvas-wrapper">
+                        <canvas id="drawCanvas" width="540" height="360"></canvas>
+                    </div>
+
+                    <div class="draw-sidebar">
+                        <div class="panel-section">
+                            <div class="section-label">Çizim Aracı</div>
+                            <div class="tool-buttons">
+                                <button class="tool-btn active" data-tool="brush" id="toolBrush">Piksel Kalemi</button>
+                                <button class="tool-btn" data-tool="fill" id="toolFill">Kova</button>
+                                <button class="tool-btn" data-tool="eraser" id="toolEraser">Silgi</button>
+                            </div>
+                        </div>
+
+                        <div class="panel-section">
+                            <div class="section-label">Retro Palet</div>
+                            <div class="color-palette">
+                                <div class="color-swatch active" style="background: #53FC18;" data-color="#53FC18"></div>
+                                <div class="color-swatch" style="background: #1b7a3e;" data-color="#1b7a3e"></div>
+                                <div class="color-swatch" style="background: #00E5FF;" data-color="#00E5FF"></div>
+                                <div class="color-swatch" style="background: #0a369d;" data-color="#0a369d"></div>
+                                <div class="color-swatch" style="background: #FFD700;" data-color="#FFD700"></div>
+                                <div class="color-swatch" style="background: #FF5722;" data-color="#FF5722"></div>
+                                <div class="color-swatch" style="background: #E63946;" data-color="#E63946"></div>
+                                <div class="color-swatch" style="background: #FF007F;" data-color="#FF007F"></div>
+                                <div class="color-swatch" style="background: #7B2CBF;" data-color="#7B2CBF"></div>
+                                <div class="color-swatch" style="background: #06D6A0;" data-color="#06D6A0"></div>
+                                <div class="color-swatch" style="background: #E0C097;" data-color="#E0C097"></div>
+                                <div class="color-swatch" style="background: #8D6E63;" data-color="#8D6E63"></div>
+                                <div class="color-swatch" style="background: #B0BEC5;" data-color="#B0BEC5"></div>
+                                <div class="color-swatch" style="background: #37474F;" data-color="#37474F"></div>
+                                <div class="color-swatch" style="background: #FFFFFF;" data-color="#FFFFFF"></div>
+                                <div class="color-swatch" style="background: #000000;" data-color="#000000"></div>
+                            </div>
+                        </div>
+
+                        <div class="panel-section">
+                            <div class="section-label">
+                                <span>Piksel Fırça Boyutu</span>
+                                <span id="brushSizeVal">1x1</span>
+                            </div>
+                            <div class="tool-buttons">
+                                <button class="tool-btn active" data-size="1">1x1</button>
+                                <button class="tool-btn" data-size="2">2x2</button>
+                                <button class="tool-btn" data-size="3">3x3</button>
+                            </div>
+                        </div>
+
+                        <div class="panel-section">
+                            <div class="section-label">Canlı Önizleme</div>
+                            <div class="preview-box">
+                                <canvas id="previewCanvas" width="180" height="90"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Balık Bilgileri -->
+                <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label for="inputFishName" style="font-family:var(--font-pixel); font-size:9px; color:var(--text-secondary); margin-bottom:6px; display:block;">Balığın Adı</label>
+                        <input type="text" id="inputFishName" class="text-input" placeholder="ör. Piksel Nemo" maxlength="20" value="Piksel Balık" style="width:100%;">
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <label for="inputCreatorName" style="font-family:var(--font-pixel); font-size:9px; color:var(--text-secondary); margin-bottom:6px; display:block;">Kick Kullanıcı Adın</label>
+                        <input type="text" id="inputCreatorName" class="text-input" placeholder="Kick Nickname" maxlength="20" value="pristagna" style="width:100%;" readonly>
+                    </div>
+                    <button class="primary-btn" id="btnBringToLife" style="height: 42px; padding: 0 24px;">
+                        ▶ CANLANDIR VE AKVARYUMA BIRAK
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- 4. İKİNCİ AŞAMA: 8-BİT KİŞİSEL AKVARYUM -->
+        <main class="view-container" id="view-pet">
+            <div class="aquarium-viewport">
+                <canvas id="aquariumCanvas"></canvas>
+                <canvas id="glassCanvas"></canvas>
+
+                <!-- Ziyaretçi Banner -->
+                <div class="guest-banner" id="guestBanner" style="display: none;">
+                    <div class="guest-banner-content">
+                        <span>👀 @<strong id="guestOwnerName">pristagna</strong> AKVARYUMUNDASIN</span>
+                        <button class="tool-btn" id="btnGuestPetFish">❤️ SEV (+5 🪙)</button>
+                        <button class="primary-btn" id="btnReturnMyTank" style="padding: 4px 10px; font-size:10px;">🏠 DÖN</button>
+                    </div>
+                </div>
+
+                <!-- Üst HUD -->
+                <div class="pet-hud-top">
+                    <div class="hud-panel fish-info-hud">
+                        <div class="fish-avatar-circle">
+                            <img id="hudFishAvatar" src="" alt="Balık">
+                        </div>
+                        <div class="fish-title-group">
+                            <h3 id="hudFishName">Piksel Balık</h3>
+                            <p id="hudFishLevel">Lv. 1/10 (Yavru)</p>
+                        </div>
+                    </div>
+
+                    <div class="hud-panel stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-header">
+                                <span>OKSİJEN</span>
+                                <span id="hudOxygenVal">85%</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill fill-oxygen" id="barOxygen" style="width: 85%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-header">
+                                <span>YOSUN LEKESİ</span>
+                                <span id="hudAlgaeVal">0 Leke</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill fill-algae" id="barAlgae" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-header">
+                                <span>BÜYÜME</span>
+                                <span id="hudGrowthVal">1 / 10 Yem</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill fill-growth" id="barGrowth" style="width: 10%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="stat-item" style="border-left:2px solid #000; padding-left:10px;">
+                            <div class="stat-header">
+                                <span style="color:#ffd700;">🪙 AFK FARM</span>
+                                <span id="hudAfkTimerText">60sn</span>
+                            </div>
+                            <div style="font-size:10px; color:var(--text-secondary); margin-top:2px;">
+                                Sağlıklı her dk: <strong>+10 Gold</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Temizleme İpucu -->
+                <div class="clean-tip-badge" id="cleanTipBadge">
+                    🧽 CAMDAKİ PİKSEL YOSUN LEKELERİNİ SİL!
+                </div>
+
+                <!-- Alt Butonlar -->
+                <div class="pet-hud-bottom">
+                    <button class="action-card-btn" id="btnPumpAir">
+                        <span class="btn-icon-large">💨</span>
+                        <span>Oksijen Bas</span>
+                        <span class="btn-sub-label">Hava Taşı</span>
+                    </button>
+
+                    <button class="action-card-btn feed-btn-special" id="btnFeedFish">
+                        <span class="btn-icon-large">🍣</span>
+                        <span id="feedBtnText">Yem Hazırlanıyor</span>
+                        <span class="btn-sub-label" id="feedTimerText">10:00 Kalan</span>
+                    </button>
+
+                    <button class="release-ocean-btn" id="btnReleaseToOcean">
+                        <span style="font-size: 18px;">🌊</span>
+                        <span>OKYANUSA SAL!</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- 5. TOPLULUK AKVARYUMLARI -->
+        <main class="view-container" id="view-community">
+            <div class="community-view-wrapper">
+                <div class="community-header">
+                    <div>
+                        <h2>👥 Topluluk Akvaryumları</h2>
+                        <p>Diğer izleyicilerin piksel akvaryumlarını gez, balıklarını sev ve altın kazan!</p>
+                    </div>
+                    <button class="tool-btn" id="btnRefreshCommunity">🔄 Yenile</button>
+                </div>
+
+                <div class="aquarium-grid" id="communityGrid"></div>
+            </div>
+        </main>
+
+        <!-- 6. ORTAK OKYANUS -->
+        <main class="view-container" id="view-ocean">
+            <canvas id="oceanCanvas"></canvas>
+
+            <div class="ocean-overlay-controls">
+                <button class="tab-btn" id="btnToggleObsMode" title="Arayüzsüz tam ekran modu">
+                    🎥 OBS / Sinematik
+                </button>
+                <button class="tab-btn" id="btnDropOceanFood" title="Okyanusa Yem At">
+                    🍣 Toplu Yem At
+                </button>
+            </div>
+
+            <div class="ocean-stats-panel">
+                <div class="ocean-stat-col">
+                    <span class="ocean-stat-num" id="statOceanFishCount">0</span>
+                    <span class="ocean-stat-txt">Yüzen Balık</span>
+                </div>
+                <div class="ocean-stat-col">
+                    <span class="ocean-stat-num" id="statTotalReleased">0</span>
+                    <span class="ocean-stat-txt">Toplam Salınan</span>
+                </div>
+                <div class="ocean-stat-col">
+                    <span class="ocean-stat-num" style="color:#53FC18;">8-BIT MMO</span>
+                    <span class="ocean-stat-txt">Ortak Okyanus</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 7. KOZMETİK DÜKKANI MODALI -->
+    <div class="modal-backdrop" id="modalShop">
+        <div class="shop-card">
+            <div class="shop-header">
+                <div class="shop-title-area">
+                    <h2>🛍️ 8-Bit Dükkan</h2>
+                    <p>Piksel balığına retro yüzme izleri ve akvaryum dekorları satın al!</p>
+                </div>
+                <div class="gold-badge" style="font-size: 13px; margin-left:auto;">
+                    <span>🪙</span> <strong id="shopUserGold">50</strong>
+                </div>
+                <button class="icon-btn" id="btnCloseShop">✕</button>
+            </div>
+
+            <div class="shop-items-container" id="shopItemsContainer"></div>
+        </div>
+    </div>
+
+    <!-- 8. OKYANUSA KATILMA KUTLAMA MODALI -->
+    <div class="modal-backdrop" id="modalCelebration">
+        <div class="celebration-card">
+            <div style="font-size:42px;">🌊★</div>
+            <h2 class="celebration-title">TEBRİKLER! BALIĞIN ÖZGÜRLÜĞÜNE KAVUŞTU!</h2>
+            <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;" id="celebrationDesc">
+                Emek ve sevgiyle büyüttüğün piksel balığın artık Ortak Okyanus'ta diğer tüm balıklarla birlikte yüzüyor!
+            </p>
+            <div style="display:flex; gap:10px; margin-top:8px;">
+                <button class="primary-btn" id="btnViewInOcean">
+                    🌊 OKYANUSTA GÖR
+                </button>
+                <button class="tool-btn" id="btnCreateNewFish" style="padding: 10px 18px;">
+                    🎨 YENİ BALIK ÇİZ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scriptler -->
+    <script src="audio.js"></script>
+    <script src="canvas-draw.js"></script>
+    <script src="aquarium-sim.js"></script>
+    <script src="ocean-mmo.js"></script>
+    <script src="network.js"></script>
+    <script src="kick-auth.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
